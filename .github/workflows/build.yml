@@ -26,19 +26,41 @@ jobs:
             python3-pip \
             autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev \
-            cmake libffi-dev libssl-dev build-essential
+            cmake libffi-dev libssl-dev build-essential \
+            libltdl-dev
 
       - name: Install Python dependencies
         run: |
-          pip install buildozer cython
+          pip install --upgrade pip
+          pip install buildozer==1.5.0
+          pip install cython==0.29.33
+
+      - name: Set up Android SDK environment
+        run: |
+          echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
 
       - name: Build APK
         run: |
-          buildozer android debug
+          export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+          yes | buildozer android debug 2>&1 | tee build.log
+
+      - name: Show build log on failure
+        if: failure()
+        run: |
+          tail -100 build.log || true
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: NetScanPro-APK
           path: bin/*.apk
           retention-days: 7
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          retention-days: 3
