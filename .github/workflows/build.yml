@@ -1,59 +1,26 @@
-name: Build NetScan APK
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            git zip unzip \
-            openjdk-17-jdk \
-            python3-pip \
-            autoconf libtool pkg-config \
-            zlib1g-dev libncurses5-dev libncursesw5-dev \
-            cmake libffi-dev libssl-dev build-essential \
-            libltdl-dev
-
-      - name: Install Python dependencies
-        run: |
-          pip install --upgrade pip
-          pip install buildozer==1.5.0
-          pip install cython==0.29.33
-          pip install "kivy==2.3.0"
-
-      - name: Build APK
+- name: Build APK
         run: |
           export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
           export PYTHONPATH=""
           yes | buildozer android debug 2>&1 | tee build.log
-          echo "=== Searching for APK ==="
-          find . -name "*.apk" 2>/dev/null || echo "No APK found"
-
-      - name: Show last build log lines
-        if: always()
-        run: tail -50 build.log || true
+          
+          echo "=== APK Search Results ==="
+          find . -name "*.apk" -o -name "*.aab" | head -10 || echo "No APK/AAB found"
+          
+          # Fail the job if no APK was built
+          if [ ! -f bin/*.apk ]; then
+            echo "❌ ERROR: No APK was generated in bin/ directory!"
+            ls -la bin/ || true
+            exit 1
+          fi
+          echo "✅ APK found: $(ls bin/*.apk)"
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: NetScanPro-APK
-          path: "**/*.apk"
+          path: bin/*.apk
           retention-days: 7
 
       - name: Upload build log
