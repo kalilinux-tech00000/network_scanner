@@ -1,19 +1,73 @@
-- name: Build APK
+name: Build NetScan APK
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git zip unzip \
+            openjdk-17-jdk \
+            python3-pip \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev \
+            cmake libffi-dev libssl-dev build-essential \
+            libltdl-dev libstdc++6
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install buildozer==1.5.0
+          pip install cython==0.29.33
+          pip install "kivy==2.3.0"
+
+      - name: Prepare assets & icon
+        run: |
+          mkdir -p assets
+          echo "✅ Assets folder ready"
+          ls -la assets/ || true
+
+      - name: Build APK
         run: |
           export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
           export PYTHONPATH=""
+          
+          echo "=== Starting Buildozer build ==="
           yes | buildozer android debug 2>&1 | tee build.log
           
           echo "=== APK Search Results ==="
-          find . -name "*.apk" -o -name "*.aab" | head -10 || echo "No APK/AAB found"
+          find . -name "*.apk" -o -name "*.aab" || echo "No APK found"
           
-          # Fail the job if no APK was built
-          if [ ! -f bin/*.apk ]; then
-            echo "❌ ERROR: No APK was generated in bin/ directory!"
-            ls -la bin/ || true
+          echo "=== Bin directory contents ==="
+          ls -la bin/ || echo "bin/ not found"
+          
+          # Fail job if no APK (better debugging)
+          if ls bin/*.apk 1> /dev/null 2>&1; then
+            echo "✅ APK successfully built!"
+            ls -la bin/*.apk
+          else
+            echo "❌ ERROR: No APK was generated!"
             exit 1
           fi
-          echo "✅ APK found: $(ls bin/*.apk)"
+
+      - name: Show build log summary
+        if: always()
+        run: tail -100 build.log || true
 
       - name: Upload APK
         if: success()
@@ -21,7 +75,7 @@
         with:
           name: NetScanPro-APK
           path: bin/*.apk
-          retention-days: 7
+          retention-days: 14
 
       - name: Upload build log
         if: always()
@@ -29,4 +83,4 @@
         with:
           name: build-log
           path: build.log
-          retention-days: 3
+          retention-days: 7
