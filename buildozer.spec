@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0
 
-requirements = python3,kivy==2.3.0,cython==0.29.36
+requirements = python3,kivy==2.3.0,kivymd==1.1.1,cython==0.29.36
 
 orientation = portrait
 
@@ -16,11 +16,11 @@ android.minapi = 21
 android.sdk = 33
 android.ndk = 25b
 android.ndk_api = 21
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 
 android.allow_backup = True
 # android.icon = %(source.dir)s/assets/icon.png
-
+source.include_exts = py,png,jpg,kv,atlas,json,ttf,txt
 [buildozer]
 log_level = 2
 warn_on_root = 1
