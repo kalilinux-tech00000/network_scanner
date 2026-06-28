@@ -32,6 +32,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install --upgrade pip
+          pip install virtualenv
           pip install buildozer==1.5.0
           pip install cython==0.29.36
           pip install "kivy==2.3.0"
@@ -50,7 +51,7 @@ jobs:
         run: tail -100 build.log || true
 
       - name: Upload APK
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: NetScanPro-APK
