@@ -6,11 +6,9 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0
 
-requirements = python3,kivy==2.3.0
+requirements = python3,kivy==2.3.0,cython==0.29.36
 
 orientation = portrait
-osx.python_version = 3
-osx.kivy_version = 2.3.0
 
 android.permissions = INTERNET,ACCESS_WIFI_STATE,ACCESS_NETWORK_STATE,CHANGE_WIFI_STATE,ACCESS_FINE_LOCATION
 android.api = 33
