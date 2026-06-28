@@ -23,7 +23,6 @@ android.archs = arm64-v8a, armeabi-v7a
 android.allow_backup = True
 android.icon = %(source.dir)s/assets/icon.png
 android.presplash = %(source.dir)s/assets/splash.png
-source.dir = .
 
 [buildozer]
 log_level = 2
