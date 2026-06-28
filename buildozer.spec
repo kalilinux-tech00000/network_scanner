@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,json
 version = 1.0
 
-requirements = python3,kivy==2.3.0,requests
+requirements = python3,kivy==2.3.0
 
 orientation = portrait
 osx.python_version = 3
@@ -21,8 +21,7 @@ android.ndk_api = 21
 android.archs = arm64-v8a, armeabi-v7a
 
 android.allow_backup = True
-android.icon = %(source.dir)s/assets/icon.png
-android.presplash = %(source.dir)s/assets/splash.png
+# android.icon = %(source.dir)s/assets/icon.png
 
 [buildozer]
 log_level = 2
