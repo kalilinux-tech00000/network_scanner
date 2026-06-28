@@ -42,7 +42,8 @@ jobs:
           export PYTHONPATH=""
           yes | buildozer android debug 2>&1 | tee build.log
           echo "=== Searching for APK ==="
-          find . -name "*.apk" 2>/dev/null || echo "No APK found"
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK found"
+          ls -la bin/ 2>/dev/null || echo "bin/ not found"
 
       - name: Show last build log lines
         if: always()
@@ -53,7 +54,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NetScanPro-APK
-          path: "**/*.apk"
+          path: |
+            bin/*.apk
+            **/*.apk
+            .buildozer/android/platform/build-*/**/*.apk
           retention-days: 7
 
       - name: Upload build log
