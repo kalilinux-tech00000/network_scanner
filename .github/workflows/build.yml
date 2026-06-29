@@ -56,9 +56,10 @@ jobs:
         with:
           name: NetScanPro-APK
           path: |
-            bin/*.apk
+            bin/**/*.apk
             **/*.apk
-            .buildozer/android/platform/build-*/**/*.apk
+            .buildozer/**/*.apk
+            */*.apk
           retention-days: 7
 
       - name: Upload build log
